@@ -23,7 +23,6 @@ var newBtn = document.getElementById('newBtn')
 function getRandInt(min, max) {
   // takes two integers, where min is smaller than max
   // returns a random integer between min and max
-  // potential returns include min, but do not include max
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
