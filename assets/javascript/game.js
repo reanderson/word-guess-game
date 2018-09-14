@@ -1,16 +1,22 @@
 // VARIABLES
 
-var wordBank = ['abyssinian', 'american bobtail', 'american curl', 'american shorthair', 'american wirehair', 'balinese', 'bengal', 'birman', 'bombay', 'british shorthair', 'burmese', 'burmilla', 'chartreux', 'chinese li hua', 'colorpoint sorthair', 'cornish rex', 'cymric', 'devon rex', 'egyptian mau', 'european burmese', 'havana brown', 'himalayan', 'japanese bobtail', 'javanese', 'korat', 'laperm', 'maine coon', 'manx', 'nebelung', 'norwegian forest', 'ocicat', 'oriental shorthair', 'persian', 'ragamuffin', 'ragdoll', 'russian blue', 'savannah', 'scottish fold', 'selkirk rex', 'siamese', 'siberian', 'singapura', 'snowshoe', 'somali', 'sphynx', 'tonkinese', 'turkish angora', 'turkish van']
+var letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+
+var wordBank = ['abyssinian', 'american bobtail', 'american curl', 'american shorthair', 'american wirehair', 'balinese', 'bengal', 'birman', 'bombay', 'british shorthair', 'burmese', 'burmilla', 'chartreux', 'chinese li hua', 'colorpoint shorthair', 'cornish rex', 'cymric', 'devon rex', 'egyptian mau', 'european burmese', 'havana brown', 'himalayan', 'japanese bobtail', 'javanese', 'korat', 'laperm', 'maine coon', 'manx', 'nebelung', 'norwegian forest', 'ocicat', 'oriental shorthair', 'persian', 'ragamuffin', 'ragdoll', 'russian blue', 'savannah', 'scottish fold', 'selkirk rex', 'siamese', 'siberian', 'singapura', 'snowshoe', 'somali', 'sphynx', 'tonkinese', 'turkish angora', 'turkish van']
 
 var win = 0;
 var loss = 0;
-var guess = 12;
+var guess = 10;
 
 var winCount = document.getElementById("winCount");
 var lossCount = document.getElementById("lossCount");
 var guessRemaining = document.getElementById("guessCount");
 var currentWord = document.getElementById("wordToGuess");
 var guessesMade = document.getElementById("guessesMade");
+var messageBox = document.getElementById('messageBox');
+var newBtn = document.getElementById('newBtn')
+
+//=======================================================================================
 
 // FUNCTIONS
 
@@ -44,7 +50,7 @@ function wordToBlanks(word) {
   var result = []
 
   // loop through every character in the word
-  for (i = 0; i < word.length; i++){
+  for (i = 0; i < word.length; i++) {
     // if the character is a space, push a non-breaking space to the array
     if (word[i] === " ") {
       result.push("&nbsp;");
@@ -64,7 +70,7 @@ function wordDisplay(array, location) {
   var toWrite = "";
 
   // loop through contents of array
-  for (i = 0; i < array.length; i++){
+  for (i = 0; i < array.length; i++) {
     // add the item at this index to the string, followed by a space
     toWrite = toWrite + array[i] + " ";
   }
@@ -75,16 +81,23 @@ function wordDisplay(array, location) {
 
 function arrayUpdate(array, word, letter) {
   // takes an array, a word, and a letter
-  
+
+  // make a counter variable
+  var count = 0;
+
   // for every character in the word,
   for (i = 0; i < word.length; i++) {
     // if the current character is the same as the chosen letter,
     if (word[i] === letter) {
-      // update the array at the same index to be that letter
+      // update the array at the same index to be that letter and increase counter
       array[i] = letter;
+      count++;
     }
     // if not, just move onto the next
   }
+
+  // Note in the message box how many times the letter occurred
+  messageBox.textContent = count + ' "' + letter + '" found'
 
   // return the updated array
   return array;
@@ -93,14 +106,14 @@ function arrayUpdate(array, word, letter) {
 function game() {
   // SETUP NEW GAME
   // Reset remaining guesses
-  guess = 12;
+  guess = 10;
   guessRemaining.textContent = guess;
 
   // Create empty array for this game's guesses,
   var currentGuesses = [];
 
   // Update guesses made display to be blank,
-  wordDisplay(currentGuesses, guessesMade);
+  wordDisplay(['&nbsp;'], guessesMade);
 
   // Get new word
   var word = chooseWord(wordBank);
@@ -115,47 +128,86 @@ function game() {
     var input = event.key.toLowerCase();
     console.log(input)
 
-    // check if the letter has been guessed already
-    // if it has not been guessed, continue on
-    if (!currentGuesses.includes(input)) {
-              // add the chosen letter to the current guesses,
-              currentGuesses.push(input);
-              // and update the guesses made display
-              wordDisplay(currentGuesses, guessesMade);
-      // check if the pressed letter is in the word
-      if (word.includes(input)) {
-        // if yes, update wordArray to reflect the added letter,
-        wordArray = arrayUpdate(wordArray, word, input);
-        // and update the display
-        wordDisplay(wordArray, currentWord);
-        // Then, if no more _s remain in wordArray,
-        if (!wordArray.includes("_")) {
-          // alert the user that they won
-          alert("You won! The word was " + word + "!");
-          // update the win count
-          win++;
-          winCount.textContent = win;
-          // And start a new game
-          game()
+    //only continue if user input a letter
+    if (letters.includes(input)) {
+
+      // check if the letter has been guessed already
+      // if it has not been guessed, continue on
+      if (!currentGuesses.includes(input)) {
+
+        // clear error message box
+        messageBox.textContent = ""
+
+        // add the chosen letter to the current guesses,
+        currentGuesses.push(input);
+
+        // and update the guesses made display
+        wordDisplay(currentGuesses, guessesMade);
+
+        // check if the pressed letter is in the word
+        if (word.includes(input)) {
+
+          // if yes, update wordArray to reflect the added letter,
+          wordArray = arrayUpdate(wordArray, word, input);
+
+          // and update the display
+          wordDisplay(wordArray, currentWord);
+
+          // Then, if no more _s remain in wordArray,
+          if (!wordArray.includes("_")) {
+
+            // alert the user that they won
+            messageBox.textContent = "You won! The word was " + word + "!";
+
+            // update the win count
+            win++;
+            winCount.textContent = win;
+
+            // And start a new game
+            game()
+          }
+
+        } else {
+          // remove one from the number of guesses remaining
+          guess--;
+          guessRemaining.textContent = guess;
+
+          // and note in message box that none were found
+          messageBox.textContent = 'No "' + input + '" found'
+
+          // if 0 guesses remain,
+          if (guess === 0) {
+
+            // alert the user that they lost, and wat the word was
+            messageBox.textContent = "You lost! The word was " + word + "! Try again next time!"
+
+            // update the loss count
+            loss++
+            lossCount.textContent = loss;
+
+            // And start a new game
+            game()
+          }
         }
-      
       } else {
-        // remove one from the number of guesses remaining
-        guess--;
-        guessRemaining.textContent = guess;
-        // if 0 guesses remain,
-        if (guess === 0){
-          // alert the user that they lost, and wat the word was
-          alert("You lost! The word was "+ word + "! Try again next time!")
-          // update the loss count
-          loss++
-          lossCount.textContent = loss;
-          // And start a new game
-          game()
-        }
+        // if you already guessed that letter, write into the error message box that you already guessed that letter
+        messageBox.textContent = "You already guessed this letter!"
       }
+    } else {
+      // if input is not a letter, write into the error message box that you didn't input a letter
+      messageBox.textContent = "Please guess a letter."
     }
+  }
 }
+
+
+
+//=======================================================================================
+
+// PAGE CONTENT
+newBtn.onclick = function() {
+  console.log("New Game Button Pressed");
+  game()
 }
 
 //Run Game
